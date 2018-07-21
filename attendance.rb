@@ -10,13 +10,13 @@ class Attendance < Sinatra::Base
   end
 
   get '/' do
-    "SMan was here"
+    "SMan was here -- The SMan has your back"
   end
 
   get '/test' do
     haml :test
   end
   
-  run! if app_file == $0
+  #run! if app_file == $0
 end
 
