@@ -10,7 +10,8 @@ class Attendance < Sinatra::Base
   end
 
   get '/' do
-    "SMan was here -- The SMan has your back"
+    @names = %W(Patrick Susan Collin Allison Shane Ruby)
+    haml :index
   end
 
   get '/test' do
