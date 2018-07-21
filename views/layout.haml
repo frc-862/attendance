@@ -1,0 +1,21 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}
+    %meta{:charset => "utf-8"}
+    %title FRC 862 Web Based Attendance System
+    %meta{:content => "FRC 862 Lightning Robotics Web Based Attendance System", :name => "description"}
+    %meta{:content => "Shane Hurley", :name => "author"}
+
+    %meta{:content => "width=device-width, initial-scale=1", :name => "viewport"}
+    %link{:href => "//fonts.googleapis.com/css?family=Raleway:400,300,600", :rel => "stylesheet", :type => "text/css"}
+    
+    %link{:href => "css/normalize.css", :rel => "stylesheet"}
+    %link{:href => "css/skeleton.css", :rel => "stylesheet"}
+    %link{:href => "css/application.css", :rel => "stylesheet"}
+    
+    %link{:href => "images/favicon.png", :rel => "icon", :type => "image/png"}
+  %body
+    .container
+      = yield
+
