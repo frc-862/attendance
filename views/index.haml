@@ -1,10 +1,10 @@
-%form
+%form{:action => "/", :method => "POST"}
   %label{:for => "name"} Name
   %select#name.u-full-width
     - @names.each do |name|
       %option{:vlaue => "#{name}"} 
         = name
-  %input.button-primary{:type => "submit", :value => "Check In"}/
+  %input.button-primary{:type => "submit", :name => "checkin", :value => "Check In"}/
   %input.button-primary{:type => "submit", :value => "Check Out"}/
-  %input.button-primary{:type => "submit", :value => "Register"}/
+  %input.button-primary{:type => "submit", :name => "register", :value => "Register"}/
 
