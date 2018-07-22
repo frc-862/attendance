@@ -8,10 +8,30 @@ class Attendance < Sinatra::Base
     register Sinatra::Reloader
     #also_reload '/path/to/some/file'
   end
+ 
+  configure do 
+    @@names ||= %W(Patrick Susan Collin Allison Shane Ruby)
+  end
 
   get '/' do
-    @names = %W(Patrick Susan Collin Allison Shane Ruby)
+    @names = @@names
     haml :index
+  end
+
+  post '/' do
+    if params[:register]
+      redirect "/register"    
+    end  
+  end
+
+  get "/register" do
+    haml :register
+  end
+
+  post "/register" do
+    @@names << params[:name]  
+    @@names.sort!
+    redirect "/"
   end
 
   get '/test' do
