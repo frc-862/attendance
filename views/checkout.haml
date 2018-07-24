@@ -1,11 +1,8 @@
 %form{:action => "/checkout", :method => "POST"}
   %label{:for => "name"} Name
-  %input#name.u-full-width{:name => :name, :list => :names, :autocomplete => "off"}
-  
+  %select#name.u-full-width.eselect{:name => :name}
   %input.button-primary.checkout{:type => "submit", :name => "checkout", :value => "Check Out"}/
 
 %datalist#names
-  - @names.each do |name|
-    - next if @checked[name].nil?
-    %option= name
-
+  - @checked.keys.sort.each do |name|
+    %option{:value => name}= name

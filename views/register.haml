@@ -1,5 +1,12 @@
 %form{:action => "/register", :method => "POST"}
-  %label{:for => "name"} Name
-  %input#name.u-full-width{:name => 'name', :required => true}
+  %label{:for => "first_name"} First Name
+  %input#first_name.u-full-width{:name => 'first_name', :required => true}
+
+  %label{:for => "last_name"} Last Name
+  %input#last_name.u-full-width{:name => 'last_name', :required => true}
+
+  %label{:for => "student_id"} Student ID
+  %input#student_id.u-full-width{:name => 'student_id', :required => true}
+
   %input.button-primary{:type => "submit", :name => "register", :value => "Register"}/
 

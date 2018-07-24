@@ -1,0 +1,6 @@
+%form{:action => "/checkin", :class => "checkin", :method => "POST"}
+  %h2= @cookies[:easy_checkin] 
+  -#%input#name.u-full-width{:name => :name, :list => :names, :autocomplete => "off"}
+  %input{:type => :hidden, :name => :name, :value => @cookies[:easy_checkin]}
+  
+  %input.button-primary{:type => "submit", :name => "checkin", :value => "Check In"}/

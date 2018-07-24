@@ -25,5 +25,7 @@
   %body
     .container
       %h1.title Lightning Attendance System
+      - flash.each do |key,value|
+        %h2{:class => key}= value
       = yield
 

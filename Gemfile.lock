@@ -25,7 +25,6 @@ GEM
       rack (~> 2.0)
       rack-protection (= 2.0.3)
       tilt (~> 2.0)
-    sinatra-auto-reload (0.0.6)
     sinatra-contrib (2.0.3)
       activesupport (>= 4.0.0)
       backports (>= 2.8.2)
@@ -34,6 +33,8 @@ GEM
       rack-protection (= 2.0.3)
       sinatra (= 2.0.3)
       tilt (>= 1.3, < 3)
+    sinatra-flash (0.3.0)
+      sinatra (>= 1.0.0)
     sinatra-reloader (1.0)
       sinatra-contrib
     temple (0.8.0)
@@ -49,7 +50,8 @@ DEPENDENCIES
   haml
   puma
   sinatra
-  sinatra-auto-reload
+  sinatra-contrib
+  sinatra-flash
   sinatra-reloader
 
 BUNDLED WITH
