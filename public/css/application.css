@@ -1,4 +1,16 @@
-h1 {
-  /*color: purple;*/
+h1.title {
+  margin-top: 0.5em;
 }
 
+input.button-primary:disabled:hover {
+  background-color: lightgray;
+  border-color: lightgray;
+}
+
+input.button-primary:disabled {
+  background-color: lightgray;
+  border-color: lightgray;
+}
+
+input.button-primary:enabled {
+}
