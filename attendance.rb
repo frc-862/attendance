@@ -3,6 +3,15 @@ require 'bundler'
 
 Bundler.require
 
+LOG_FILE = "attendance.log"
+NAME_FILE = "names.txt"
+
+def append(op, name)
+  File.open(LOG_FILE, "a") do |out|
+    out.puts("#{Time.now} #{op.to_s.ljust(5)} #{request.ip.to_s.ljust(15)} #{name}")
+  end
+end
+
 class Attendance < Sinatra::Base
   configure :development do
     register Sinatra::Reloader
@@ -10,7 +19,7 @@ class Attendance < Sinatra::Base
   end
  
   configure do 
-    @@names ||= IO.read("names.txt").each_line.to_a
+    @@names ||= IO.read(NAME_FILE).each_line.to_a
     @@checked ||= {}
   end
 
@@ -26,14 +35,8 @@ class Attendance < Sinatra::Base
   post '/' do
     if params[:register]
       redirect "/register"    
-    elsif params[:checkin]
-      @@checked[params[:name]] = Time.now
-      redirect "/checkout"    
-    elsif params[:checkout]
-      @@checked[params[:name]] = nil
-      redirect "/checkin"    
     else
-      params.inspect
+      redirect "/checkin"    
     end  
   end
 
@@ -46,6 +49,7 @@ class Attendance < Sinatra::Base
       redirect "/register"
     elsif params[:name]
       @@checked[params[:name]] = Time.now
+      append("IN", params[:name])
       redirect "/checkout"    
     else
       redirect "/checkin"    
@@ -57,8 +61,11 @@ class Attendance < Sinatra::Base
   end
 
   post '/checkout' do
+    puts "checkout"
+    puts params.inspect
     if params[:name]
       @@checked[params[:name]] = nil
+      append("OUT", params[:name])
       redirect "/checkin"    
     else
       redirect "/checkout"    
@@ -72,9 +79,10 @@ class Attendance < Sinatra::Base
   post "/register" do
     @@names << params[:name]  
     @@names.sort!
-    File.open("names.txt","w") do |out|
+    File.open(NAME_FILE,"w") do |out|
       out.puts @@names
     end
+    append("REG", params[:name])
     redirect "/checkin"
   end
 
