@@ -1,0 +1,11 @@
+%form{:action => "/", :method => "POST"}
+  %label{:for => "name"} Name
+  %input#name.u-full-width{:name => :name, :list => :names, :autocomplete => "off"}
+  
+  %input.button-primary.checkout{:type => "submit", :name => "checkout", :value => "Check Out"}/
+
+%datalist#names
+  - @names.each do |name|
+    - next if @checked[name].nil?
+    %option= name
+

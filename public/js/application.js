@@ -12,13 +12,11 @@ known = function(name) {
 
 handle_name = function() {
   var is_known = known($(this).val());
-  var is_checked_in = checked_in($(this).val());
-  $(".checkin").prop('disabled', !(is_known && !is_checked_in));
-  $(".checkout").prop('disabled', !(is_known && is_checked_in));
+  $(".known").prop('disabled', !is_known);
   $(".unknown").prop('disabled', is_known);
 };
 
 $(function() {
-  $("#name").keyup(handle_name);
-  $("#name").change(handle_name);
+  $("form.checkin #name").keyup(handle_name);
+  $("form.checkin #name").change(handle_name);
 });

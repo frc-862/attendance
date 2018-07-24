@@ -11,17 +11,58 @@ class Attendance < Sinatra::Base
  
   configure do 
     @@names ||= %W(Patrick Susan Collin Allison Shane Ruby)
+    @@checked ||= {}
+  end
+
+  before do
+    @names = @@names
+    @checked = @@checked
   end
 
   get '/' do
-    @names = @@names
-    haml :index
+    redirect "/checkin"
   end
 
   post '/' do
     if params[:register]
       redirect "/register"    
+    elsif params[:checkin]
+      @@checked[params[:name]] = Time.now
+      redirect "/checkout"    
+    elsif params[:checkout]
+      @@checked[params[:name]] = nil
+      redirect "/checkin"    
+    else
+      params.inspect
     end  
+  end
+
+  get "/checkin" do
+    haml :checkin
+  end
+
+  post '/checkin' do
+    if params[:register]
+      redirect "/register"
+    elsif params[:name]
+      @@checked[params[:name]] = Time.now
+      redirect "/checkout"    
+    else
+      redirect "/checkin"    
+    end
+  end
+
+  get "/checkout" do
+    haml :checkout
+  end
+
+  post '/checkout' do
+    if params[:name]
+      @@checked[params[:name]] = nil
+      redirect "/checkin"    
+    else
+      redirect "/checkout"    
+    end
   end
 
   get "/register" do
@@ -31,7 +72,7 @@ class Attendance < Sinatra::Base
   post "/register" do
     @@names << params[:name]  
     @@names.sort!
-    redirect "/"
+    redirect "/checkin"
   end
 
   get '/test' do
