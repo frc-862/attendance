@@ -1,0 +1,13 @@
+%form{:action => "/checkin", :class => "checkin", :method => "POST"}
+  %label{:for => "name"} Name
+  %input#name.u-full-width{:name => :name, :list => :names, :autocomplete => "off"}
+  
+  %input.button-primary.known{:type => "submit", :name => "checkin", :value => "Check In"}/
+  %input.button-primary.unknown{:type => "submit", :name => "register", :value => "Register"}/
+
+%datalist#names
+  - @names.each do |name|
+    - next if @checked[name]
+    %option= name
+
+
