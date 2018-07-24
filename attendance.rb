@@ -10,7 +10,7 @@ class Attendance < Sinatra::Base
   end
  
   configure do 
-    @@names ||= %W(Patrick Susan Collin Allison Shane Ruby)
+    @@names ||= IO.read("names.txt").each_line.to_a
     @@checked ||= {}
   end
 
@@ -72,6 +72,9 @@ class Attendance < Sinatra::Base
   post "/register" do
     @@names << params[:name]  
     @@names.sort!
+    File.open("names.txt","w") do |out|
+      out.puts @@names
+    end
     redirect "/checkin"
   end
 
