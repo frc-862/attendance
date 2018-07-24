@@ -1,0 +1,5 @@
+%form{:action => "/checkout", :method => "POST"}
+  %h2= @cookies[:easy_checkin] 
+  %input{:type => :hidden, :name => :name, :value => @cookies[:easy_checkin]}
+  %input.button-primary{:type => "submit", :name => "checkout", :value => "Check Out"}/
+

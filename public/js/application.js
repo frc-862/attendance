@@ -1,9 +1,3 @@
-checked_in = function(name) {
-  return $("#checked-in option").filter(function() {
-    return $(this).val() === name;
-  }).length > 0;
-};
-
 known = function(name) {
   return $("#names option").filter(function() {
     return $(this).val() === name;
@@ -20,7 +14,10 @@ handle_name = function() {
 };
 
 $(function() {
-  update_buttons(false);
+  $("#name").append($("#names > option").clone());
+  $(".eselect").editableSelect().on('select.editable-select', handle_name);
   $("form.checkin #name").keyup(handle_name);
   $("form.checkin #name").change(handle_name);
+
+  update_buttons(false);
 });
