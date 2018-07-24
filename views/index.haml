@@ -1,10 +1,14 @@
 %form{:action => "/", :method => "POST"}
   %label{:for => "name"} Name
-  %select#name.u-full-width
-    - @names.each do |name|
-      %option{:vlaue => "#{name}"} 
-        = name
-  %input.button-primary{:type => "submit", :name => "checkin", :value => "Check In"}/
-  %input.button-primary{:type => "submit", :value => "Check Out"}/
-  %input.button-primary{:type => "submit", :name => "register", :value => "Register"}/
+  %input#name.u-full-width{:list => :names}
+  
+  %input.button-primary.checkin{:type => "submit", :name => "checkin", :value => "Check In"}/
+  %input.button-primary.checkout{:type => "submit", :value => "Check Out"}/
+  %input.button-primary.unknown{:type => "submit", :name => "register", :value => "Register"}/
 
+%datalist#names
+  - @names.each do |name|
+    %option= name
+
+%datalist#checked-in
+  %option Patrick

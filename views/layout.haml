@@ -8,15 +8,20 @@
     %meta{:content => "Shane Hurley", :name => "author"}
 
     %meta{:content => "width=device-width, initial-scale=1", :name => "viewport"}
-    %link{:href => "//fonts.googleapis.com/css?family=Raleway:400,300,600", :rel => "stylesheet", :type => "text/css"}
+
+    -#%link{:href => "//fonts.googleapis.com/css?family=Raleway:400,300,600", :rel => "stylesheet", :type => "text/css"}
+    %link{:href => "css/fonts.css", :rel => "stylesheet", :type => "text/css"}
     
     %link{:href => "css/normalize.css", :rel => "stylesheet"}
     %link{:href => "css/skeleton.css", :rel => "stylesheet"}
     %link{:href => "css/application.css", :rel => "stylesheet"}
+
+    %script{:type => "text/javascript", :src => "js/jquery-3.3.1.min.js"}
+    %script{:type => "text/javascript", :src => "js/application.js"}
     
     %link{:href => "images/favicon.png", :rel => "icon", :type => "image/png"}
   %body
     .container
-      %h1 Lightning Attendance System
+      %h1.title Lightning Attendance System
       = yield
 
