@@ -1,0 +1,5 @@
+%h2 Checked In
+%dl
+  - @checked.each do |name, time|
+    %dt= name
+    %dd= time.ago rescue ""
