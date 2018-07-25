@@ -81,7 +81,7 @@ class Attendance < Sinatra::Base
 
   get "/checkin" do
     if @names[cookies[:easy_checkin]] 
-      if @checked[cookies[:easy_checkin]] == Date.today
+      if @checked[cookies[:easy_checkin]]
         redirect "/checkout"
       else
         haml :easy_checkin
@@ -95,7 +95,7 @@ class Attendance < Sinatra::Base
     if params[:register]
       redirect "/register"
     elsif params[:name]
-      if @names[params[:name]] == params[:student_id]
+      if cookies[:easy_checkin] == params[:name] || @names[params[:name]] == params[:student_id]
         @checked[params[:name]] = Time.now
         append("IN", params[:name])
         cookies[:easy_checkin] = params[:name]
@@ -113,7 +113,8 @@ class Attendance < Sinatra::Base
 
   get "/checkout" do
     if @names[cookies[:easy_checkin]] 
-      if @checked[cookies[:easy_checkin]].to_date == Date.today
+      if @checked[cookies[:easy_checkin]]
+        @checkin = @checked[cookies[:easy_checkin]]
         haml :easy_checkout
       else
         redirect "/checkin"
@@ -139,8 +140,12 @@ class Attendance < Sinatra::Base
 
   post "/register" do
     @@names[params.values_at(:first_name, :last_name).join(" ")] = params[:student_id]
-    append("REG", params.values_at(:last_name, :first_name, :student_id))
+    append("REG", params.values_at(:first_name, :last_name, :student_id))
     redirect "/checkin"
+  end
+
+  get "/checked-in" do
+    haml :checked_in
   end
 
 end
