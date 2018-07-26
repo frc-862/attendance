@@ -124,6 +124,11 @@ class Attendance < Sinatra::Base
     end
   end
 
+  get "/logout" do
+    cookies.clear
+    redirect "/checkin"    
+  end
+
   post '/checkout' do
     if params[:name]
       @@checked[params[:name]] = nil
@@ -148,5 +153,20 @@ class Attendance < Sinatra::Base
     haml :checked_in
   end
 
+  get "/close-down" do
+    haml :close_down
+  end
+
+  post "/close-down" do
+    if params[:pin] == "862465"
+      @@checked.each do |name, date|
+        @@checked[name] = nil
+        append("OUT", name)
+      end
+    else
+      flash[:error] = "Invalid PIN"
+    end
+    redirect "/checked-in"
+  end
 end
 

@@ -1,8 +1,9 @@
 %form{:action => "/checkout", :method => "POST"}
   %h2= @cookies[:easy_checkin] 
   %h3 
-    %span#duration{:data => { :checkin => @checkin }} 0:00
+    %span#duration{:data => { :checkin => @checkin }} 0:00:00
     since check in
   %input{:type => :hidden, :name => :name, :value => @cookies[:easy_checkin]}
   %input.button-primary{:type => "submit", :name => "checkout", :value => "Check Out"}/
+  %a.button.button-primary{:href => "/logout"} Logout
 
