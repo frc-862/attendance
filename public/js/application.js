@@ -44,5 +44,13 @@ $(function() {
     setInterval(update_duration, 1000);
   }
 
+  if ($("span#duration").length > 0) {
+    setInterval(update_duration, 1000);
+  }
+
+  if ($("h2.checked-in").length > 0) {
+    setTimeout(function() { location.reload(true) }, 30000);
+  }
+
   update_buttons(false);
 });

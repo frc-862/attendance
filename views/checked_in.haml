@@ -1,5 +1,7 @@
-%h2 Checked In
+%h2.checked-in Checked In
 %dl
   - @checked.each do |name, time|
     %dt= name
     %dd= time.ago rescue ""
+  
+%a.button.button-primary{:href => "/close-down"} Check everyone out
