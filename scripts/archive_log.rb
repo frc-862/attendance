@@ -6,6 +6,7 @@ require_relative "attendance_log.rb"
 
 Dir.chdir("/home/attendance/attendance")
 system("pumactl -F puma.rb stop")
+system("pkill -f process_log.rb")
 
 FileUtils.mv("attendance.log", "attendance.tmp")
 
@@ -27,5 +28,6 @@ files.values.each do |out|
 end
 
 FileUtils.unlink("attendance.tmp")
+system("/usr/bin/ruby scripts/process_log.rb &")
 system("pumactl -F puma.rb start")
 
