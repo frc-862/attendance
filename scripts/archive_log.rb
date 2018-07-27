@@ -28,6 +28,7 @@ files.values.each do |out|
 end
 
 FileUtils.unlink("attendance.tmp")
-system("/usr/bin/ruby scripts/process_log.rb &")
+
+system("/home/attendance/process-log")
 system("pumactl -F puma.rb start")
 
