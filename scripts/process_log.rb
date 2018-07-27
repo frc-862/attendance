@@ -132,6 +132,13 @@ class ProcessLog
 end
 
 puts "#{Time.now} Starting log processing"
-ProcessLog.new.run
+while true do
+  begin
+    ProcessLog.new.run
+  rescue
+    puts "#{Time.now} Error: {$!}"
+    sleep 30
+  end
+end
 puts "#{Time.now} Log processing complete"
 
