@@ -29,6 +29,49 @@ class ProcessLog
     end
   end
 
+  def check_in(name, date, time)
+    if checkin[name]
+      if checkin[name].to_date == date
+        # double checkin, do nothing?
+      else
+        # missed a checkout for previous date, mark it with an X
+        row = attendance.get_name_row(name)
+        col = attendance.get_date_col(checkin[name].to_date)
+        attendance.set(row,col,times[[name,checkin[name].to_date]] || "X")
+        checkin[name] = time
+      end
+    else
+      # clean checkin
+      checkin[name] = time
+      row = attendance.get_name_row(name)
+      col = attendance.get_date_col(date)
+      attendance.set(row,col, times[[name,date]] || "X")
+    end
+  end
+
+  def check_out(name, date, time)
+    if checkin[name]
+      row = attendance.get_name_row(name)
+      if checkin[name].to_date == date
+        col = attendance.get_date_col(date)
+        duration = (time - checkin[name]) / (60.0 * 60.0)
+        times[[name,date]] += duration
+        attendance.set(row, col, times[[name,date]]) 
+        checkin[name] = nil
+      else
+        col = attendance.get_date_col(checkin[name].to_date)
+        checkin[name] = time
+        attendance.set(row, col, 'X') 
+      end
+    else
+      # checkout/checkin out of sync? treat this as a checkin
+      row = attendance.get_name_row(name)
+      col = attendance.get_date_col(time.to_date.to_s)
+      checkin[name] = time     
+      attendance.set(row, col, 'X') 
+    end
+  end
+
   def run
     log = AttendanceLog.new
     log.tail do |date, time, cmd, ip, body|
@@ -40,45 +83,10 @@ class ProcessLog
 
         case cmd
         when "IN"
-          if checkin[name]
-            if checkin[name].to_date == date
-              # double checkin, do nothing?
-            else
-              # missed a checkout for previous date, mark it with an X
-              row = attendance.get_name_row(name)
-              col = attendance.get_date_col(checkin[name].to_date)
-              attendance.set(row,col,times[[name,checkin[name].to_date]] || "X")
-              checkin[name] = time
-            end
-          else
-            # clean checkin
-            checkin[name] = time
-            row = attendance.get_name_row(name)
-            col = attendance.get_date_col(date)
-            attendance.set(row,col, times[[name,date]] || "X")
-          end
+          check_in(name, date, time)
 
         when "OUT"
-          if checkin[name]
-            row = attendance.get_name_row(name)
-            if checkin[name].to_date == date
-              col = attendance.get_date_col(date)
-              duration = (time - checkin[name]) / (60.0 * 60.0)
-              times[[name,date]] += duration
-              attendance.set(row, col, times[[name,date]]) 
-              checkin[name] = nil
-            else
-              col = attendance.get_date_col(checkin[name].to_date)
-              checkin[name] = time
-              attendance.set(row, col, 'X') 
-            end
-          else
-            # checkout/checkin out of sync? treat this as a checkin
-            row = attendance.get_name_row(name)
-            col = attendance.get_date_col(time.to_date.to_s)
-            checkin[name] = time     
-            attendance.set(row, col, 'X') 
-          end
+          check_out(name, date, time)
 
         when "REG"
           attendance.new_row(fname, lname, pin)
