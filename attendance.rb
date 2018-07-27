@@ -178,7 +178,7 @@ class Attendance < Sinatra::Base
   end
 
   post "/register" do
-    name = params.values_at[:first_name, :last_name].join(" ")
+    name = params.values_at(:first_name, :last_name).join(" ")
     if @@names[name]
       flash[:error] = "Sorry you cannot register #{name}, it is already registered."
       redirect "/register"
