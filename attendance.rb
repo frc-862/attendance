@@ -72,7 +72,7 @@ class Attendance < Sinatra::Base
   end
 
   def ip
-    env["HTTP_REMOTE_ADDR"] || request.ip
+    env["HTTP_X_FORWARDED_FOR"] || request.ip
   end
 
   def append(op, *values)
@@ -178,9 +178,15 @@ class Attendance < Sinatra::Base
   end
 
   post "/register" do
-    @@names[params.values_at(:first_name, :last_name).join(" ")] = params[:student_id]
-    append("REG", params.values_at(:first_name, :last_name, :student_id))
-    redirect "/checkin"
+    name = params.values_at[:first_name, :last_name].join(" ")
+    if @@names[name]
+      flash[:error] = "Sorry you cannot register #{name}, it is already registered."
+      redirect "/register"
+    else
+      @@names[name] = params[:student_id]
+      append("REG", params.values_at(:first_name, :last_name, :student_id))
+      redirect "/checkin"
+    end
   end
 
   get "/checked-in" do
