@@ -27,7 +27,7 @@ files.values.each do |out|
   out.close
 end
 
-FileUtils.unlink("attendance.tmp")
+FileUtils.rm("attendance.tmp")
 
 system("/home/attendance/process-log")
 system("pumactl -F puma.rb start")
