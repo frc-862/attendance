@@ -3,9 +3,18 @@ require 'date'
 require 'time'
 require 'file-tail'
 require 'thread'
+require "resolv"
 
 require_relative "attendance_log"
 require_relative "attendance_interface"
+
+def has_internet?
+  dns_resolver = Resolv::DNS.new()
+  dns_resolver.getaddress("symbolics.com") #the first domain name ever. Will probably not be removed ever.
+  true
+rescue Resolv::ResolvError => e
+  false
+end
 
 class ProcessLog
   attr_reader :lock, :times, :checkin, :attendance
@@ -21,8 +30,10 @@ class ProcessLog
 
     @thread = Thread.new do 
       while @running do
-        lock.synchronize do
-          attendance.save
+        if has_internet?
+          lock.synchronize do
+            attendance.save
+          end
         end
         sleep 5
       end  
@@ -73,8 +84,16 @@ class ProcessLog
   end
 
   def run
-    log = AttendanceLog.new
-    log.tail do |date, time, cmd, ip, body|
+    log = nil
+    if ARGV.first
+      log = AttendanceLog.new(ARGV.first)
+    else
+      log = AttendanceLog.new
+    end
+
+    log.tail(!ARGV.first) do |date, time, cmd, ip, body|
+      sleep(5) until has_internet?
+
       lock.synchronize do
         fname, lname, pin = *body.split(/\s+/)
         name = "#{fname} #{lname}"
@@ -94,6 +113,10 @@ class ProcessLog
         end
       end
     end
+    @running = false
+    @thread.join
+    attendance.save
+
   rescue Interrupt
     puts "Stopping..."
     times.each do |key, time|
