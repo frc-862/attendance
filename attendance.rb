@@ -8,7 +8,8 @@ NAME_FILE = "names.txt"
 
 def append(op, *value)
   File.open(LOG_FILE, "a") do |out|
-    out.puts("#{Time.now} #{op.to_s.ljust(5)} #{request.ip.to_s.ljust(15)} #{value.join("\t")}")
+    ip = env["X-Real-IP"]
+    out.puts("#{Time.now} #{op.to_s.ljust(5)} #{ip.to_s.ljust(15)} #{value.join("\t")}")
   end
 end
 
