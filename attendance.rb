@@ -14,25 +14,55 @@ class Attendance < Sinatra::Base
 
   configure :development do
     register Sinatra::Reloader
-    #also_reload '/path/to/some/file'
   end
- 
-  configure do 
-    @@log = AttendanceLog.new
-    @@names ||= nil 
-    if @@names.nil?
-      @@names = {}
-      IO.read(NAME_FILE).each_line.map do |line| 
-        next if line.match(/^\s*$/)
-        next if line.match(/^\s*#/)
 
-        if line.match(/^\s*(\S+)\s+(\S+)\s+(\S+)/)
-          @@names["#{$1} #{$2}"] = $3
-        end
+  def self.check_log_file
+    last_time = Time.now
+    @@log.foreach do |date, time, cmd, ip, body|
+      last_time = time if last_time < time 
+    end
+
+    if last_time > Time.now
+      system(%Q|sudo date --set="#{Time.now}"|)
+    end
+
+    today = last_time.to_date
+    @@log.foreach do |date, time, cmd, ip, body|
+      next unless date == today
+
+      fname, lname, pin = *body.split(/\s+/)
+      name = "#{fname} #{lname}"
+
+      if cmd == "IN"
+        @@checked[name] = time
+      elsif cmd == "OUT"
+        @@checked[name] = nil
       end
     end
 
+    last_time
+  end 
+
+  def self.read_names
+    check_log_file
+
+    @@names = {}
+    IO.read(NAME_FILE).each_line.map do |line| 
+      next if line.match(/^\s*$/)
+      next if line.match(/^\s*#/)
+
+      if line.match(/^\s*(\S+)\s+(\S+)\s+(\S+)/)
+        @@names["#{$1} #{$2}"] = $3
+      end
+    end
+  end
+
+  configure do 
+    @@log = AttendanceLog.new
+    @@names ||= nil 
     @@checked ||= {}
+
+    read_names if @@names.nil?
   end
 
   before do
