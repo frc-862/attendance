@@ -133,6 +133,9 @@ class ProcessLog
 end
 
 puts "#{Time.now} Starting log processing"
+sleep 1 until has_internet?
+puts "#{Time.now} Internet connected"
+
 while true do
   begin
     ProcessLog.new.run
