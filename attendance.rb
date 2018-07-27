@@ -3,15 +3,9 @@ require 'bundler'
 
 Bundler.require
 
-LOG_FILE = "attendance.log"
-NAME_FILE = "names.txt"
+require_relative "scripts/attendance_log.rb"
 
-def append(op, *value)
-  File.open(LOG_FILE, "a") do |out|
-    ip = env["HTTP_REMOTE_ADDR"]
-    out.puts("#{Time.now} #{op.to_s.ljust(5)} #{ip.to_s.ljust(15)} #{value.join("\t")}")
-  end
-end
+NAME_FILE = "names.txt"
 
 class Attendance < Sinatra::Base
   helpers Sinatra::Cookies
@@ -24,6 +18,7 @@ class Attendance < Sinatra::Base
   end
  
   configure do 
+    @@log = AttendanceLog.new
     @@names ||= nil 
     if @@names.nil?
       @@names = {}
@@ -46,9 +41,17 @@ class Attendance < Sinatra::Base
     @cookies = cookies
   end
 
-  get '/cookies/:key/:value' do
-    cookies[params[:key]] = params[:value]
+  def ip
+    env["HTTP_REMOTE_ADDR"] || request.ip
   end
+
+  def append(op, *values)
+    @@log.append(op, ip, *values)
+  end
+
+  #get '/cookies/:key/:value' do
+    #cookies[params[:key]] = params[:value]
+  #end
 
   get '/cookies/:key' do
     cookies[params[:key]]
