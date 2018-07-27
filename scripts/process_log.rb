@@ -35,6 +35,7 @@ class ProcessLog
             if attendance.save
               puts "#{Time.now} Saved attendance data"
             end
+            STDOUT.flush
           end
         end
         sleep 60
