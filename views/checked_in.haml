@@ -1,6 +1,7 @@
 %h2.checked-in Checked In
 %dl
   - @checked.each do |name, time|
+    - next if time.nil?
     %dt= name
     %dd= time.ago rescue ""
   
