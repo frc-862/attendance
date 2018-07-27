@@ -32,10 +32,12 @@ class ProcessLog
       while @running do
         if has_internet?
           lock.synchronize do
-            attendance.save
+            if attendance.save
+              puts "#{Time.now} Saved attendance data"
+            end
           end
         end
-        sleep 5
+        sleep 60
       end  
     end
   end
@@ -97,8 +99,8 @@ class ProcessLog
       lock.synchronize do
         fname, lname, pin = *body.split(/\s+/)
         name = "#{fname} #{lname}"
-        puts "#{date} #{time} #{cmd} #{ip} #{body}"
-        puts "#{fname.inspect} #{lname.inspect} #{pin.inspect}"
+        puts "#{Time.now} Processing #{time} #{cmd} #{ip} #{body}"
+        #puts "#{fname.inspect} #{lname.inspect} #{pin.inspect}"
 
         case cmd
         when "IN"
@@ -108,6 +110,7 @@ class ProcessLog
           check_out(name, date, time)
 
         when "REG"
+          #puts "#{Time.now} Resigering #{name}"
           attendance.new_row(fname, lname, pin)
 
         end
@@ -118,7 +121,7 @@ class ProcessLog
     attendance.save
 
   rescue Interrupt
-    puts "Stopping..."
+    puts "#{Time.now} Stopping..."
     times.each do |key, time|
       puts "#{key.first}: #{time}"
     end
@@ -128,5 +131,7 @@ class ProcessLog
   end
 end
 
+puts "#{Time.now} Starting log processing"
 ProcessLog.new.run
+puts "#{Time.now} Log processing complete"
 
