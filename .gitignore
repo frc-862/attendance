@@ -11,7 +11,9 @@
 /tmp/
 
 names.txt
-attendance.log
+config.json
+*.log
+*.tmp
 
 # Used by dotenv library to load environment variables.
 # .env
