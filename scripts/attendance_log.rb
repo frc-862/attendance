@@ -12,28 +12,33 @@ class AttendanceLog
     end
   end
 
-  def foreach
-    File.open(@fname).each_line do |line|
-      if line.match(/^(.{25})\s+(\S+)\s+(\S+)\s+(.*)$/)
-        time, cmd, ip, body = $~.captures 
-        time = Time.parse(time)
-        date = time.to_date
-        yield date, time, cmd, ip, body
-      end
+  def process_line(line)
+    if line.match(/^(.{25})\s+(\S+)\s+(\S+)\s+(.*)$/)
+      time, cmd, ip, body = $~.captures 
+      time = Time.parse(time)
+      date = time.to_date
+      yield date, time, cmd, ip, body
     end
   end
 
-  def tail
-    File.open(@fname) do |log| 
-      log.extend(File::Tail)
-      log.interval # 10
-      log.tail do |line| 
-        if line.match(/^(.{25})\s+(\S+)\s+(\S+)\s+(.*)$/)
-          time, cmd, ip, body = $~.captures 
-          time = Time.parse(time)
-          date = time.to_date
-          yield date, time, cmd, ip, body
+  def foreach(&block)
+    File.open(@fname).each_line do |line|
+      process_line(line, &block)
+    end
+  end
+
+  def tail(follow = true, &block)
+    if follow
+      File.open(@fname) do |log| 
+        log.extend(File::Tail)
+        log.interval # 10
+        log.tail do |line| 
+          process_line(line, &block)
         end
+      end
+    else
+      File.open(@fname).each_line do |line|
+        process_line(line, &block)
       end
     end
   end
