@@ -1,11 +1,12 @@
 %form{:action => "/checkout", :method => "POST"}
   %label{:for => "name"} Name
   %select#name.u-full-width.eselect{:name => :name}
-  %input.button-primary.checkout{:type => "submit", :name => "checkout", :value => "Check Out"}/
 
   %label{:for => "student_id"} Student Id
   %input#student_id.u-full-width{:name => :student_id}
   
+  %input.button-primary.checkout{:type => "submit", :name => "checkout", :value => "Check Out"}/
+
 %datalist#names
   - @checked.keys.sort.each do |name|
     %option{:value => name}= name
