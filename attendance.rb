@@ -37,6 +37,8 @@ class Attendance < Sinatra::Base
         @@checked[name] = time
       elsif cmd == "OUT"
         @@checked[name] = nil
+      elsif cmd == "REG"
+        @@names[name] = pin
       end
     end
 
@@ -44,9 +46,9 @@ class Attendance < Sinatra::Base
   end 
 
   def self.read_names
+    @@names = {}
     check_log_file
 
-    @@names = {}
     IO.read(NAME_FILE).each_line.map do |line| 
       next if line.match(/^\s*$/)
       next if line.match(/^\s*#/)
