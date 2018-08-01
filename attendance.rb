@@ -189,6 +189,18 @@ class Attendance < Sinatra::Base
     end
   end
 
+  get "/time" do
+    haml :time    
+  end
+
+  post "/time" do
+    time = Time.parse(params[:time])
+    if (time - Time.now).abs > 300
+      system(%Q|sudo date --set="#{time}"|)
+    end
+    Time.now.rfc2822
+  end
+
   get "/checked-in" do
     haml :checked_in
   end

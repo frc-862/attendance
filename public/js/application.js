@@ -34,6 +34,11 @@ update_duration = function() {
   $("#duration").text(`${hours}:${rjust(minutes,2,"0")}:${rjust(seconds,2,"0")}`);
 };
 
+function clock() {
+  $("h2#local").text(new Date());
+  $.post("/time", "time=" + new Date())
+}
+
 $(function() {
   $("#name").append($("#names > option").clone());
   $(".eselect").editableSelect().on('select.editable-select', handle_name);
@@ -52,5 +57,9 @@ $(function() {
     setTimeout(function() { location.reload(true) }, 30000);
   }
 
+  if ($("h2#local").length > 0) {
+    setInterval(clock, 1000);
+  }
+    
   update_buttons(false);
 });
