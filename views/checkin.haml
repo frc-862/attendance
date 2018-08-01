@@ -10,5 +10,5 @@
 
 %datalist#names
   - @names.each do |name,values|
-    - next if @checked[name].nil?
+    - next unless @checked[name].nil?
     %option= name
