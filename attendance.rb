@@ -135,9 +135,7 @@ class Attendance < Sinatra::Base
         @@checked[params[:name]] = Time.now
         append("IN", params[:name])
         cookies[:easy_checkin] = params[:name]
-        set(:cookie_options) do
-          { :expires => Time.now + 3600*24*365 }
-        end
+        response.set_cookie 'easy_checkin', {:value=> params[:name], :max_age => "31536000"}
         redirect "/checkout"    
       else
         flash[:error] = "Sorry your student id does not match your name." 

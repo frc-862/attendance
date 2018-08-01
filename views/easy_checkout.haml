@@ -6,7 +6,7 @@
     since check in
 
   %input{:type => :hidden, :name => :name, :value => @cookies[:easy_checkin]}
-  %input{:type => :hidden, :name => :student_id, :value => @cookies[:easy_checkin]}
+  %input{:type => :hidden, :name => :student_id, :value => @names[@cookies[:easy_checkin]]}
 
   %input.button-primary{:type => "submit", :name => "checkout", :value => "Check Out"}/
   %a.button.button-primary{:href => "/logout"} Logout
