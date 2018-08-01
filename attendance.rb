@@ -114,8 +114,8 @@ class Attendance < Sinatra::Base
   end
 
   get "/checkin" do
-    if @names[cookies[:easy_checkin]] 
-      if @checked[cookies[:easy_checkin]]
+    if @@names[cookies[:easy_checkin]] 
+      if @@checked[cookies[:easy_checkin]]
         redirect "/checkout"
       else
         haml :easy_checkin
@@ -129,10 +129,11 @@ class Attendance < Sinatra::Base
     if params[:register]
       redirect "/register"
     elsif params[:name]
-      if cookies[:easy_checkin] == params[:name] || @names[params[:name]] == params[:student_id]
-        @checked[params[:name]] = Time.now
+      if cookies[:easy_checkin] == params[:name] || @@names[params[:name]] == params[:student_id]
+        @@checked[params[:name]] = Time.now
         append("IN", params[:name])
         cookies[:easy_checkin] = params[:name]
+        set(:cookie_options) { :expires => Time.now + 3600*24*365 }
         redirect "/checkout"    
       else
         flash[:error] = "Sorry your student id does not match your name." 
@@ -146,9 +147,9 @@ class Attendance < Sinatra::Base
   end
 
   get "/checkout" do
-    if @names[cookies[:easy_checkin]] 
-      if @checked[cookies[:easy_checkin]]
-        @checkin = @checked[cookies[:easy_checkin]]
+    if @@names[cookies[:easy_checkin]] 
+      if @@checked[cookies[:easy_checkin]]
+        @checkin = @@checked[cookies[:easy_checkin]]
         haml :easy_checkout
       else
         redirect "/checkin"
@@ -164,7 +165,7 @@ class Attendance < Sinatra::Base
   end
 
   post '/checkout' do
-    if params[:name]
+    if params[:name] && @@names[params[:name]] == params[:student_id]
       @@checked[params[:name]] = nil
       append("OUT", params[:name])
       redirect "/checkin"    
