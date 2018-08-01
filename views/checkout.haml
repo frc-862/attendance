@@ -9,4 +9,5 @@
 
 %datalist#names
   - @checked.keys.sort.each do |name|
+    - next if @checked[name].nil?
     %option{:value => name}= name
