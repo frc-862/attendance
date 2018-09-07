@@ -161,11 +161,6 @@ class Attendance < Sinatra::Base
     end
   end
 
-  get "/logout" do
-    cookies.clear
-    redirect "/checkin"    
-  end
-
   post '/checkout' do
     if params[:name] && @@names[params[:name]] == params[:student_id]
       @@checked[params[:name]] = nil
