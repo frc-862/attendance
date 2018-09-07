@@ -157,7 +157,7 @@ class Attendance < Sinatra::Base
     elsif params[:name]
       if cookies[:easy_checkin] == params[:name] || @@names[params[:name]] == params[:student_id]
         @@checked[params[:name]] = Time.now
-        append("IN", params[:name])
+        append("IN", params[:name], params[:pos])
         cookies[:easy_checkin] = params[:name]
         response.set_cookie 'easy_checkin', {:value=> params[:name], :max_age => "31536000"}
         redirect "/checkout"    
