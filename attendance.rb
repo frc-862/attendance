@@ -63,6 +63,7 @@ class Attendance < Sinatra::Base
     @@log = AttendanceLog.new
     @@names ||= nil 
     @@checked ||= {}
+    @@closed = true
 
     read_names if @@names.nil?
   end
@@ -93,6 +94,12 @@ class Attendance < Sinatra::Base
     cookies.inspect
   end
 
+  before do
+    if request.path_info != "/closed" && request.path_info != "/open"
+       redirect "/closed" if @@closed 
+    end
+  end
+
   get '/' do
     redirect "/checkin"
   end
@@ -103,6 +110,23 @@ class Attendance < Sinatra::Base
     else
       redirect "/checkin"    
     end  
+  end
+
+  get "/open" do
+    haml :open
+  end
+
+  post "/open" do
+    if params[:pin] == "862465"
+      @@closed = false
+      redirect "/checked-in"
+    else
+      redirect "/open"
+    end
+  end
+
+  get "/closed" do
+    haml :closed
   end
 
   get "/logout" do
@@ -213,10 +237,12 @@ class Attendance < Sinatra::Base
         @@checked[name] = nil
         append("OUT", name)
       end
+      @@closed = true
+      redirect "/open"
     else
       flash[:error] = "Invalid PIN"
+      redirect "/checked-in"
     end
-    redirect "/checked-in"
   end
 end
 
