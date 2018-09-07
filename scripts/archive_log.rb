@@ -16,8 +16,8 @@ files[today] = File.open("attendance.log", "a");
 
 File.open("attendance.tmp", "r") do |att|
   att.each_line do |line|
-    if line.match(/^(.{10})/)
-      date = Date.parse($1)
+    if line.match(/^(.{25})/)
+      date = Time.parse($1).localtime.to_date
       files[date].puts line
     end
   end
@@ -29,6 +29,8 @@ end
 
 FileUtils.rm("attendance.tmp")
 
+sname = File.join(File.dirname(__FILE__), 'dump_member.rb')
+system("ruby #{sname}")
 system("/home/attendance/process-log")
 system("pumactl -F puma.rb start")
 
