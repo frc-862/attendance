@@ -34,10 +34,12 @@ class Attendance
   FIRST_DATE_COL = 7
 
   DATEROW = 1
+  NAMEROW = 2
 
   def dump_members
-    File.open("../names.txt", "w") do |members|
-      (DATEROW + 1..@hours.num_rows).each do |row|
+    fname = File.join(File.dirname(__FILE__), '..', "names.txt")
+    File.open(fname, "w") do |members|
+      (NAMEROW..@hours.num_rows).each do |row|
         name = "#{@hours[row,FIRST_NAMECOL]} #{@hours[row,LAST_NAMECOL]}".strip
         id = @hours[row, RFIDCOL].to_s.rjust(10,'0')
         @hours[row, RFIDCOL + 3] = id
@@ -46,6 +48,7 @@ class Attendance
         @hours[row, STUDCOL] = studid
 
         name = Faker::Name.name if name.to_s.length == 0
+
         members.puts "#{name}\t#{stud}"
       end
     end

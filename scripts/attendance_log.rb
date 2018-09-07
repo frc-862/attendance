@@ -15,7 +15,7 @@ class AttendanceLog
   def process_line(line)
     if line.match(/^(.{25})\s+(\S+)\s+(\S+)\s+(.*)$/)
       time, cmd, ip, body = $~.captures 
-      time = Time.parse(time)
+      time = Time.parse(time).localtime
       date = time.to_date
       yield date, time, cmd, ip, body
     end

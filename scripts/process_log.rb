@@ -17,7 +17,7 @@ rescue Resolv::ResolvError => e
 end
 
 class ProcessLog
-  attr_reader :lock, :times, :checkin, :attendance
+  attr_reader :lock, :times, :checkin, :attendance, :prev_checkin
 
   def initialize
     @lock = Mutex.new
@@ -25,6 +25,7 @@ class ProcessLog
 
     @times = Hash.new { 0 }
     @checkin = {}
+    @prev_checkin = {}
 
     @attendance = Attendance.new
 
@@ -70,7 +71,9 @@ class ProcessLog
         col = attendance.get_date_col(date)
         duration = (time - checkin[name]) / (60.0 * 60.0)
         times[[name,date]] += duration
-        attendance.set(row, col, times[[name,date]]) 
+        hours = times[[name,date]]
+        attendance.set(row, col, (hours / 0.25).ceil * 0.25)
+        prev_checkin[name] = checkin[name]
         checkin[name] = nil
       else
         col = attendance.get_date_col(checkin[name].to_date)
@@ -78,12 +81,17 @@ class ProcessLog
         attendance.set(row, col, 'X') 
       end
     else
+      log "Double checkout from #{prev_checkin[name]} to #{time}"
       # checkout/checkin out of sync? treat this as a checkin
-      row = attendance.get_name_row(name)
-      col = attendance.get_date_col(time.to_date.to_s)
-      checkin[name] = time     
-      attendance.set(row, col, 'X') 
+      #row = attendance.get_name_row(name)
+      #col = attendance.get_date_col(time.to_date.to_s)
+      #checkin[name] = time     
+      #attendance.set(row, col, 'X') 
     end
+  end
+
+  def log(*msg)
+    puts "#{Time.now} #{msg.join(" ")}"
   end
 
   def run
