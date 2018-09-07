@@ -4,6 +4,7 @@
   
   %label{:for => "student_id"} Student Id
   %input#student_id.u-full-width{:name => :student_id}
+  %input{:type => :hidden, :name => :pos, :id => :pos, :value => ""}
   
   %input.button-primary.known{:type => "submit", :name => "checkin", :value => "Check In"}/
   %input.button-primary.unknown{:type => "submit", :name => "register", :value => "Register"}/

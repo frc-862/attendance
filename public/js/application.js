@@ -39,6 +39,17 @@ function clock() {
   $.post("/time", "time=" + new Date())
 }
 
+getLocation = function(id) {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      var coords = pos.coords;
+      if (coords) {
+        $(id).val(coords.longitude + "," + coords.latitude);
+      }
+    });
+  }
+}
+
 $(function() {
   $("#name").append($("#names > option").clone());
   $(".eselect").editableSelect().on('select.editable-select', handle_name);
@@ -60,6 +71,10 @@ $(function() {
   if ($("h2#local").length > 0) {
     setInterval(clock, 1000);
   }
-    
+
+  if ($("#pos").length > 0) {
+    getLocation("#pos");
+  }
+
   update_buttons(false);
 });
