@@ -1,5 +1,12 @@
 %form{:action => "/checkin", :class => "checkin", :method => "POST"}
+<<<<<<< HEAD
+  %label{:for => "name"} 
+    Name (note if your name is not here and normally is see if it is 
+    %a{:href=>"https://frc862.com/checked-in"} here
+    )
+=======
   %label{:for => "name"} Name
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
   %select#name.u-full-width.eselect{:name => :name}
   
   %label{:for => "student_id"} Student Id
@@ -7,7 +14,10 @@
   %input{:type => :hidden, :name => :pos, :id => :pos, :value => ""}
   
   %input.button-primary.known{:type => "submit", :name => "checkin", :value => "Check In"}/
+<<<<<<< HEAD
+=======
   %input.button-primary.unknown{:type => "submit", :name => "register", :value => "Register"}/
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
 
 %datalist#names
   - @names.each do |name,values|
