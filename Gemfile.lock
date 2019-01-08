@@ -7,8 +7,13 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
     ago (0.1.5)
+    awrence (1.0.0)
     backports (3.11.3)
     concurrent-ruby (1.0.5)
+    faraday (0.13.1)
+      multipart-post (>= 1.2, < 3)
+    faraday_middleware (0.10.1)
+      faraday (>= 0.7.4, < 1.0)
     haml (5.0.4)
       temple (>= 0.8.0)
       tilt
@@ -16,7 +21,13 @@ GEM
       concurrent-ruby (~> 1.0)
     minitest (5.11.3)
     multi_json (1.13.1)
+    multipart-post (2.0.0)
     mustermann (1.0.2)
+    pdf-core (0.7.0)
+    plissken (1.2.0)
+    prawn (2.2.2)
+      pdf-core (~> 0.7.0)
+      ttfunk (~> 1.5)
     puma (3.12.0)
     rack (2.0.5)
     rack-protection (2.0.3)
@@ -38,9 +49,15 @@ GEM
       sinatra (>= 1.0.0)
     sinatra-reloader (1.0)
       sinatra-contrib
+    smartsheet (1.2.0)
+      awrence (~> 1.0)
+      faraday (~> 0.13.1)
+      faraday_middleware (~> 0.10.0)
+      plissken (~> 1.2)
     temple (0.8.0)
     thread_safe (0.3.6)
     tilt (2.0.8)
+    ttfunk (1.5.1)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
 
@@ -50,11 +67,13 @@ PLATFORMS
 DEPENDENCIES
   ago
   haml
+  prawn
   puma
   sinatra
   sinatra-contrib
   sinatra-flash
   sinatra-reloader
+  smartsheet
 
 BUNDLED WITH
    1.16.2

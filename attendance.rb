@@ -4,6 +4,7 @@ require 'bundler'
 Bundler.require
 
 require_relative "scripts/attendance_log.rb"
+require_relative "scripts/generate_status.rb"
 
 NAME_FILE = "names.txt"
 
@@ -95,7 +96,7 @@ class Attendance < Sinatra::Base
   end
 
   before do
-    if request.path_info != "/closed" && request.path_info != "/open"
+    if request.path_info != "/closed" && request.path_info != "/open" && request.path_info != "/status"
        redirect "/closed" if @@closed 
     end
   end
@@ -114,6 +115,11 @@ class Attendance < Sinatra::Base
 
   get "/open" do
     haml :open
+  end
+
+  get "/status" do
+    build_report "public/status.pdf"
+    redirect "/status.pdf"
   end
 
   post "/open" do

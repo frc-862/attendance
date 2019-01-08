@@ -7,4 +7,6 @@ gem 'sinatra-flash'
 gem 'haml'
 gem 'ago'
 gem 'puma'
+gem 'smartsheet'
+gem 'prawn'
 
