@@ -60,7 +60,10 @@ class ProcessLog
       checkin[name] = time
       row = attendance.get_name_row(name)
       col = attendance.get_date_col(date)
+<<<<<<< HEAD
       puts "Name: #{name.inspect} at row #{row.inspect} for #{date.inspect} in column #{col.inspect}"
+=======
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
       attendance.set(row,col, times[[name,date]] || "X")
     end
   end
@@ -109,8 +112,12 @@ class ProcessLog
       lock.synchronize do
         fname, lname, pin = *body.split(/\s+/)
         name = "#{fname} #{lname}"
+<<<<<<< HEAD
         row = attendance.get_name_row(name)
         puts "#{Time.now} Processing #{time} #{cmd} #{ip} #{body} (#{row})"
+=======
+        puts "#{Time.now} Processing #{time} #{cmd} #{ip} #{body}"
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
         #puts "#{fname.inspect} #{lname.inspect} #{pin.inspect}"
 
         case cmd
@@ -127,7 +134,10 @@ class ProcessLog
         end
       end
     end
+<<<<<<< HEAD
 
+=======
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
     @running = false
     @thread.join
     attendance.save
@@ -140,9 +150,12 @@ class ProcessLog
     @running = false
     @thread.join
     attendance.save
+<<<<<<< HEAD
   rescue 
     puts "Unexpected error #{$!}"
     puts $!.backtrace
+=======
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
   end
 end
 
@@ -150,11 +163,17 @@ puts "#{Time.now} Starting log processing"
 sleep 1 until has_internet?
 puts "#{Time.now} Internet connected"
 
+<<<<<<< HEAD
 running = true
 while running do
   begin
     ProcessLog.new.run
     running = ARGV.first.nil?
+=======
+while true do
+  begin
+    ProcessLog.new.run
+>>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
   rescue
     puts "#{Time.now} Error: #{$!}"
     sleep 30
