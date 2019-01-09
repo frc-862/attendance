@@ -97,7 +97,8 @@ class Attendance < Sinatra::Base
   end
 
   before do
-    if request.path_info != "/closed" && request.path_info != "/open" && request.path_info != "/status"
+    if request.path_info != "/closed" && request.path_info != "/open" && 
+		request.path_info != "/status" && request.path_info != "/proto_status"
        redirect "/closed" if @@closed 
     end
   end
