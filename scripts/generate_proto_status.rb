@@ -81,7 +81,7 @@ class SSheet
   end
 end
 
-def build_report(fname)
+def build_proto_report(fname)
   # select first task without a predecessor or a fulfilled predecessor by date
   # if all tasks have a predecessor 
 
@@ -95,11 +95,7 @@ def build_report(fname)
   end
 
   tasks = {}
-  tasks["Strategy"] = nil
-  tasks["Design"] = nil
-  tasks["Fabrication"] = nil
-  tasks["Electrical"] = nil
-  tasks["Programming"] = nil
+  tasks["Team Cargo"] = nil
 
   completed = {}
   ss.length.times do |i|
@@ -108,12 +104,7 @@ def build_report(fname)
     next if completed[i+1] = (status == "Complete")
 
     next if assigned.to_s.strip.empty?
-    next if assigned.to_s.strip == "Leadership"
-    next if assigned.to_s.strip == "Full Team"
-    next if assigned.to_s.strip == "Full team"
-    next if assigned.to_s.strip.match(/^Team/)
-    #next if assigned.to_s.strip == "Controls"
-    next if assigned.to_s.strip == "EO"
+    next unless assigned.to_s.strip.match(/^Team/)
 
     next if tasks[assigned]
 
@@ -136,11 +127,8 @@ def build_report(fname)
 
   Prawn::Document.generate(fname, page_layout: :landscape, page_size: "LETTER") do
     image "lightning.png", width: 150
-    text_box "<b><font size='20'>Build Season Status Meeting</font></b>\n" +
-      "#{Date.today.strftime("%-d %b %Y")}\n" +
-      "Update any changes in your current task status (percent complete)\n" + 
-      "State any issues that are slowing your progress and what we can do to help\n" +
-      "<b>This is not a time for design and change discussions</b>",
+    text_box "<b><font size='20'>Prototype Status Overview</font></b>\n" +
+      "#{Date.today.strftime("%-d %b %Y")}\n", 
       at: [175, bounds.top - 55], 
       width: bounds.right,
       inline_format: true
@@ -165,7 +153,7 @@ def build_report(fname)
 
       if finish == Date.today or finish == (Date.today + 1)
         color = yellow
-      elsif finish < Date.today
+      elsif finish && finish < Date.today
         color = red
       end
 
@@ -188,6 +176,6 @@ def build_report(fname)
 end
 
 if __FILE__ == $0
-  build_report(ARGV.first || "status.pdf")
+  build_proto_report(ARGV.first || "proto_status.pdf")
 end
 

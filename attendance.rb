@@ -5,6 +5,7 @@ Bundler.require
 
 require_relative "scripts/attendance_log.rb"
 require_relative "scripts/generate_status.rb"
+require_relative "scripts/generate_proto_status.rb"
 
 NAME_FILE = "names.txt"
 
@@ -120,6 +121,11 @@ class Attendance < Sinatra::Base
   get "/status" do
     build_report "public/status.pdf"
     redirect "/status.pdf"
+  end
+
+  get "/proto_status" do
+    build_proto_report "public/proto_status.pdf"
+    redirect "/proto_status.pdf"
   end
 
   post "/open" do
