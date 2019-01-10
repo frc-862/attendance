@@ -90,6 +90,8 @@ def build_report(fname)
   if File.exists?(fname)
     if File.mtime(fname) > ss.modified_at
       ## skip if up to date
+      puts "File time: #{File.mtime(fname)}"
+      puts "Modified time: #{ss.modifed_at}"
       return
     end
   end
