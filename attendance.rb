@@ -169,11 +169,13 @@ class Attendance < Sinatra::Base
       redirect "/register"
     elsif params[:name]
       if cookies[:easy_checkin] == params[:name] || @@names[params[:name]] == params[:student_id]
-        @@checked[params[:name]] = Time.now
-        append("IN", params[:name], params[:pos])
-        cookies[:easy_checkin] = params[:name]
-        response.set_cookie 'easy_checkin', {:value=> params[:name], :max_age => "31536000"}
-        redirect "/checkout"    
+        unless @@checked[params[:name]]
+          @@checked[params[:name]] = Time.now
+          append("IN", params[:name], params[:pos])
+          cookies[:easy_checkin] = params[:name]
+          response.set_cookie 'easy_checkin', {:value=> params[:name], :max_age => "31536000"}
+          redirect "/checkout"    
+        end
       else
         flash[:error] = "Sorry your student id does not match your name." 
         redirect "/checkin"
