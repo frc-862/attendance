@@ -101,11 +101,8 @@ class Attendance
   def get_name_row(name)
     name = name.to_s.strip.gsub(/\s+/," ")
     (1..@hours.num_rows).each do |row|
-<<<<<<< HEAD
       #puts "#{name.chars.inspect} -- #{row}"
       #puts "#{@hours[row, FIRST_NAMECOL]} #{@hours[row, LAST_NAMECOL]}".strip.gsub(/\s+/," ").chars.inspect
-=======
->>>>>>> fff0c87be349d106a504d3f4cb2a24956ecb8a0d
       if name == "#{@hours[row, FIRST_NAMECOL]} #{@hours[row, LAST_NAMECOL]}".strip.gsub(/\s+/," ")
         return row
       end 

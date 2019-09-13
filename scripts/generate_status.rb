@@ -90,6 +90,8 @@ def build_report(fname)
   if File.exists?(fname)
     if File.mtime(fname) > ss.modified_at
       ## skip if up to date
+      puts "File time: #{File.mtime(fname)}"
+      puts "Modified time: #{ss.modified_at}"
       return
     end
   end
@@ -165,14 +167,14 @@ def build_report(fname)
 
       if finish == Date.today or finish == (Date.today + 1)
         color = yellow
-      elsif finish < Date.today
+      elsif finish && finish < Date.today
         color = red
       end
 
       text_box "<b><font size='14'>#{group}</font></b>\n" +
         "Current Task: #{gtasks.first}\n" +
         "Status: <color rgb='#{color}'>#{stext}</color>\n" +
-        "due #{finish.strftime("%-d-%b")}\n#{comment}",
+        "due #{if finish then finish.strftime("%-d-%b") else "ASAP" end}\n#{comment}",
         at: [0 + column * bounds.right / 2, cursor],
         width: bounds.right / 2,
         inline_format: true
