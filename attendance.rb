@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'bundler'
+require 'time'
+require 'date'
 
 Bundler.require
 
@@ -30,15 +32,12 @@ class Attendance < Sinatra::Base
 
     today = last_time.to_date
     @@log.foreach do |date, time, cmd, ip, body|
-      next unless date == today
-
+      # next unless date == today
       fname, lname, pin = *body.split(/\s+/)
       name = "#{fname} #{lname}"
 
       if cmd == "IN"
         @@checked[name] = time
-      elsif cmd == "OUT"
-        @@checked[name] = nil
       elsif cmd == "REG"
         @@names[name] = pin
       end
@@ -65,7 +64,8 @@ class Attendance < Sinatra::Base
     @@log = AttendanceLog.new
     @@names ||= nil 
     @@checked ||= {}
-    @@closed = true
+    #@@closed = true
+    @@closed = false
 
     read_names if @@names.nil?
   end
@@ -96,6 +96,10 @@ class Attendance < Sinatra::Base
     cookies.inspect
   end
 
+  get '/checked' do
+    @@checked.inspect
+  end
+
   before do
     if request.path_info != "/closed" && request.path_info != "/open" && 
 		request.path_info != "/status" && request.path_info != "/proto_status"
@@ -120,13 +124,7 @@ class Attendance < Sinatra::Base
   end
 
   get "/status" do
-    build_report "public/status.pdf"
-    redirect "/status.pdf"
-  end
-
-  get "/proto_status" do
-    build_proto_report "public/proto_status.pdf"
-    redirect "/proto_status.pdf"
+    redirect "/checked_in"
   end
 
   post "/open" do
@@ -144,52 +142,60 @@ class Attendance < Sinatra::Base
 
   get "/logout" do
     cookies.clear
+    cookies[:easy_checkin] = nil
+    response.set_cookie 'easy_checkin', nil
+
     redirect "/checkin"
   end
 
   post "/logout" do
     cookies.clear
+    cookies[:easy_checkin] = nil
+    response.set_cookie 'easy_checkin', nil
+
     redirect "/checkin"
   end
 
+  get "/easy_checkin" do
+    haml :easy_checkin
+  end
+
   get "/checkin" do
+    easy = false
     if @@names[cookies[:easy_checkin]] 
-      if @@checked[cookies[:easy_checkin]]
-        redirect "/checkout"
-      else
-        haml :easy_checkin
+      if cookies[:easy_checkin] && @@checked[cookies[:easy_checkin]] && @@checked[cookies[:easy_checkin]].to_date != Date.today
+	  easy = true
+	  redirect "/easy_checkin"
       end
-    else
-      haml :checkin
     end
+    haml :checkin unless easy
   end
 
   post '/checkin' do
     if params[:register]
       redirect "/register"
+    elsif params[:logout]
+      redirect "/logout"
+    elsif params[:loop]
+      redirect "/checkin"
+    elsif params[:countdown]
+      redirect "/checked-in"
     elsif params[:name]
-      if cookies[:easy_checkin] == params[:name] || @@names[params[:name]] == params[:student_id]
-        unless @@checked[params[:name]]
+      if (@@names[params[:name]] == params[:student_id]) || (cookies[:easy_checkin] == params[:name])
           @@checked[params[:name]] = Time.now
-          append("IN", params[:name], params[:pos])
           cookies[:easy_checkin] = params[:name]
           response.set_cookie 'easy_checkin', {:value=> params[:name], :max_age => "31536000"}
-          redirect "/checkout"    
-        end
+          append("IN", params[:name], params[:pos])
       else
         flash[:error] = "Sorry your student id does not match your name." 
-        redirect "/checkin"
       end
-    else
-      params.inspect
-
-      #redirect "/checkin"    
+      redirect "/checkin"    
     end
   end
 
   get "/checkout" do
     if @@names[cookies[:easy_checkin]] 
-      if @@checked[cookies[:easy_checkin]]
+      if cookies[:easy_checkin] && @@checked[cookies[:easy_checkin]] && @@checked[cookies[:easy_checkin]].to_date == Date.today
         @checkin = @@checked[cookies[:easy_checkin]]
         haml :easy_checkout
       else
@@ -201,13 +207,7 @@ class Attendance < Sinatra::Base
   end
 
   post '/checkout' do
-    if params[:name] && @@names[params[:name]] == params[:student_id]
-      @@checked[params[:name]] = nil
-      append("OUT", params[:name])
-      redirect "/checkin"    
-    else
-      redirect "/checkout"    
-    end
+    redirect "/checkin"
   end
 
   get "/register" do
@@ -248,10 +248,6 @@ class Attendance < Sinatra::Base
 
   post "/close-down" do
     if params[:pin] == "862465"
-      @@checked.each do |name, date|
-        @@checked[name] = nil
-        append("OUT", name)
-      end
       @@closed = true
       redirect "/open"
     else

@@ -5,5 +5,7 @@
     %dt= name
     %dd= time.ago rescue ""
   
-%a.button.button-primary{:href => "/close-down"} Check everyone out
-%a.button.button-primary{:href => "/checkin"} Check myself in
+%form{:action => "/checkin", :class => "checkin", :method => "POST"}
+  %input.button-primary{:type => "submit", :name => "loop", :value => "I just need to click something"}
+
+

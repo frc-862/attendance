@@ -5,7 +5,7 @@ require 'pp'
 class Attendance 
   def initialize 
     @session = GoogleDrive.saved_session("config.json")
-    @sheet = @session.spreadsheet_by_title("2018-2019 Attendance Tracker")
+    @sheet = @session.spreadsheet_by_title("2019-2020 Attendance Tracker")
     @hours = @sheet.worksheets[0]
   end
  
@@ -34,22 +34,24 @@ class Attendance
   FIRST_DATE_COL = 7
 
   DATEROW = 1
-  NAMEROW = 2
+  HOURROW = 2
+  TYPEROW = 4
+  NAMEROW = 5
 
   def dump_members
     fname = File.join(File.dirname(__FILE__), '..', "names.txt")
     File.open(fname, "w") do |members|
       (NAMEROW..@hours.num_rows).each do |row|
+	email = @hours[row, EMAILCOL].to_s
         name = "#{@hours[row,FIRST_NAMECOL]} #{@hours[row,LAST_NAMECOL]}".strip
         id = @hours[row, RFIDCOL].to_s.rjust(10,'0')
-        @hours[row, RFIDCOL + 3] = id
-        stud = @hours[row, STUDCOL]
+	stud = @hours[row, STUDCOL].to_i
         studid = @hours[row, STUDCOL].to_s
         @hours[row, STUDCOL] = studid
 
         name = Faker::Name.name if name.to_s.length == 0
 
-        members.puts "#{name}\t#{stud}"
+        members.puts "#{name}\t#{stud}\t#{email}"
       end
     end
   end
@@ -65,7 +67,18 @@ class Attendance
     end
 
     # did not find date, add it 
-    @hours[DATEROW, @hours.num_cols + 1] = date 
+    col = @hours.num_cols + 1
+    @hours[DATEROW, col] = date 
+    newdate = Date.parse(date)
+    weekday = (1..5) === newdate.wday
+    after_kickoff = newdate >= Date.new(2020,1,4)
+    if weekday
+      @hours[HOURROW, col] = after_kickoff ? 4 : 3
+      @hours[TYPEROW, col] = 'M'
+    else
+      @hours[HOURROW, col] = 8
+      @hours[TYPEROW, col] = after_kickoff ? 'M' : 'O'
+    end
     return @hours.num_cols
   end 
 
@@ -79,11 +92,11 @@ class Attendance
     #could not find the id number
     new_row = @hours.num_rows + 1 
     @hours[new_row, RFIDCOL] = rfid
-    @hours[new_row, TOTALCOL] = "=SUM(G#{new_row}:#{new_row})"  
+    @hours[new_row, TOTALCOL] = %Q|=SUMIF(G#{new_row}:#{new_row}, "X", G2:2)|
     return new_row
   end 
 
-  def new_row(fname, lname, id)
+  def new_row(fname, lname, id, email='')
     newrow = get_name_row("#{fname} #{lname}")
     if newrow 
       #@hours[newrow, STUDCOL] = id
@@ -92,7 +105,8 @@ class Attendance
       @hours[new_row, STUDCOL] = id
       @hours[new_row, FIRST_NAMECOL] = fname
       @hours[new_row, LAST_NAMECOL] = lname
-      @hours[new_row, TOTALCOL] = "=SUM(G#{new_row}:#{new_row})"  
+      @hours[new_row, EMAILCOL] = email
+      @hours[new_row, TOTALCOL] = %Q|=SUMIF(G#{new_row}:#{new_row}, "X", G2:2)|
     end
 
     new_row

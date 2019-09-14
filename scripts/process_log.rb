@@ -45,50 +45,9 @@ class ProcessLog
   end
 
   def check_in(name, date, time)
-    if checkin[name]
-      if checkin[name].to_date == date
-        # double checkin, do nothing?
-      else
-        # missed a checkout for previous date, mark it with an X
-        row = attendance.get_name_row(name)
-        col = attendance.get_date_col(checkin[name].to_date)
-        attendance.set(row,col,times[[name,checkin[name].to_date]] || "X")
-        checkin[name] = time
-      end
-    else
-      # clean checkin
-      checkin[name] = time
-      row = attendance.get_name_row(name)
-      col = attendance.get_date_col(date)
-      puts "Name: #{name.inspect} at row #{row.inspect} for #{date.inspect} in column #{col.inspect}"
-      attendance.set(row,col, times[[name,date]] || "X")
-    end
-  end
-
-  def check_out(name, date, time)
-    if checkin[name]
-      row = attendance.get_name_row(name)
-      if checkin[name].to_date == date
-        col = attendance.get_date_col(date)
-        duration = (time - checkin[name]) / (60.0 * 60.0)
-        times[[name,date]] += duration
-        hours = times[[name,date]]
-        attendance.set(row, col, (hours / 0.25).ceil * 0.25)
-        prev_checkin[name] = checkin[name]
-        checkin[name] = nil
-      else
-        col = attendance.get_date_col(checkin[name].to_date)
-        checkin[name] = time
-        attendance.set(row, col, 'X') 
-      end
-    else
-      log "Double checkout from #{prev_checkin[name]} to #{time}"
-      # checkout/checkin out of sync? treat this as a checkin
-      #row = attendance.get_name_row(name)
-      #col = attendance.get_date_col(time.to_date.to_s)
-      #checkin[name] = time     
-      #attendance.set(row, col, 'X') 
-    end
+    row = attendance.get_name_row(name)
+    col = attendance.get_date_col(date)
+    attendance.set(row,col,"X")
   end
 
   def log(*msg)
@@ -107,7 +66,7 @@ class ProcessLog
       sleep(5) until has_internet?
 
       lock.synchronize do
-        fname, lname, pin = *body.split(/\s+/)
+        fname, lname, pin, email = *body.split(/\s+/)
         name = "#{fname} #{lname}"
         row = attendance.get_name_row(name)
         puts "#{Time.now} Processing #{time} #{cmd} #{ip} #{body} (#{row})"
@@ -117,12 +76,9 @@ class ProcessLog
         when "IN"
           check_in(name, date, time)
 
-        when "OUT"
-          check_out(name, date, time)
-
         when "REG"
           #puts "#{Time.now} Resigering #{name}"
-          attendance.new_row(fname, lname, pin)
+          attendance.new_row(fname, lname, pin, email)
 
         end
       end
@@ -140,6 +96,7 @@ class ProcessLog
     @running = false
     @thread.join
     attendance.save
+    puts "Saved"
   rescue 
     puts "Unexpected error #{$!}"
     puts $!.backtrace

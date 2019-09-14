@@ -4,7 +4,7 @@ require 'fileutils'
 
 require_relative "attendance_log.rb"
 
-Dir.chdir("/home/attendance/attendance")
+Dir.chdir("/home/frc862/attendance")
 system("pumactl -F puma.rb stop")
 system("pkill -f process_log.rb")
 
@@ -31,6 +31,6 @@ FileUtils.rm("attendance.tmp")
 
 sname = File.join(File.dirname(__FILE__), 'dump_member.rb')
 system("ruby #{sname}")
-system("/home/attendance/process-log")
+system("/home/frc862/attendance/process-log")
 system("pumactl -F puma.rb start")
 
