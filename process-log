@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd /home/frc862/attendance 
+(/usr/bin/ruby scripts/process_log.rb 2>&1 > /home/frc862/attendance/process.log)&
+

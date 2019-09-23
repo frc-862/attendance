@@ -21,6 +21,7 @@ class ProcessLog
 
   def initialize
     @lock = Mutex.new
+    @changed = false
     @running = true
 
     @times = Hash.new { 0 }
@@ -33,10 +34,13 @@ class ProcessLog
       while @running do
         if has_internet?
           lock.synchronize do
-            if attendance.save
-              puts "#{Time.now} Saved attendance data"
-            end
-            STDOUT.flush
+            if @changed
+              if attendance.save
+                puts "#{Time.now} Saved attendance data"
+              end
+              STDOUT.flush
+	      @changed = false
+	    end
           end
         end
         sleep 60
@@ -70,15 +74,17 @@ class ProcessLog
         name = "#{fname} #{lname}"
         row = attendance.get_name_row(name)
         puts "#{Time.now} Processing #{time} #{cmd} #{ip} #{body} (#{row})"
-        #puts "#{fname.inspect} #{lname.inspect} #{pin.inspect}"
+	puts "#{fname.inspect} #{lname.inspect} #{pin.inspect} #{email.inspect}"
 
         case cmd
         when "IN"
           check_in(name, date, time)
+	  @changed = true
 
         when "REG"
-          #puts "#{Time.now} Resigering #{name}"
+          puts "#{Time.now} Resigering #{name}"
           attendance.new_row(fname, lname, pin, email)
+	  @changed = true
 
         end
       end

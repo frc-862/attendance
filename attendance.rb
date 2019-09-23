@@ -182,10 +182,14 @@ class Attendance < Sinatra::Base
       redirect "/checked-in"
     elsif params[:name]
       if (@@names[params[:name]] == params[:student_id]) || (cookies[:easy_checkin] == params[:name])
-          @@checked[params[:name]] = Time.now
+	  if @@checked[params[:name]] && @@checked[params[:name]].to_date != Date.today
+	    @@checked[params[:name]] = Time.now
+	    append("IN", params[:name], params[:pos])
+	  end
           cookies[:easy_checkin] = params[:name]
           response.set_cookie 'easy_checkin', {:value=> params[:name], :max_age => "31536000"}
-          append("IN", params[:name], params[:pos])
+	  flash[:error] = "You are now checke in." 
+	  redirect "/checked-in"
       else
         flash[:error] = "Sorry your student id does not match your name." 
       end
@@ -193,35 +197,18 @@ class Attendance < Sinatra::Base
     end
   end
 
-  get "/checkout" do
-    if @@names[cookies[:easy_checkin]] 
-      if cookies[:easy_checkin] && @@checked[cookies[:easy_checkin]] && @@checked[cookies[:easy_checkin]].to_date == Date.today
-        @checkin = @@checked[cookies[:easy_checkin]]
-        haml :easy_checkout
-      else
-        redirect "/checkin"
-      end
-    else
-      haml :checkout
-    end
-  end
-
-  post '/checkout' do
-    redirect "/checkin"
-  end
-
   get "/register" do
     haml :register
   end
 
   post "/register" do
-    name = params.values_at(:first_name, :last_name).join(" ")
+    name = params.values_at(:first_name, :last_name).map {|n| n.strip }.join(" ")
     if @@names[name]
       flash[:error] = "Sorry you cannot register #{name}, it is already registered."
       redirect "/register"
     else
       @@names[name] = params[:student_id]
-      append("REG", params.values_at(:first_name, :last_name, :student_id))
+      append("REG", params.values_at(:first_name, :last_name, :student_id, :email))
       redirect "/checkin"
     end
   end
